@@ -1,0 +1,2171 @@
+<html>
+<body>
+<style>
+body { 
+background-color: #111111;
+}
+</style>
+<script src = "WE.js"></script>
+<script>
+c = document.createElement("canvas");
+ctx = c.getContext("2d");
+
+width =  1000; height = 1000;
+c.width =  1000; c.height = 1000;
+displayWidth = 500; displayHeight = 500;
+
+//displayC.width = 500;
+//displayC.height = 500;
+
+wpress = false;ipress = false;
+apress = false;jpress = false;
+spress = false;kpress = false;
+dpress = false;lpress = false;
+qpress = false;spress = false;
+onepress = false;twopress = false;
+sftpress = false;esqpress = false;
+ctlpress = false;
+mouse1press=false;mouse1waspress=false;
+mouse2press=false;mouse2waspress=false;
+mouseX = 0; mouseY = 0;
+spacepress=false;spacewaspress=false;
+
+background = new Image();
+background.src = "https://"+
+"images5.alphacoders.com/665/"+
+"thumb-1920-665815.jpg";
+
+yasuoImg = new Image();
+yasuoImg.src = "https://"+
+"orig00.deviantart.net/4539/"+
+"f/2016/122/4/1/high_noon_yas"+
+"uo_render_by_ukisshadyvaati-da10c1t.png";
+document.addEventListener("keydown",
+function(e){
+//e.preventDefault()
+if(e.keyCode == 49) onepress = true;
+if(e.keyCode == 50) twopress = true;
+if(e.keyCode == 87) wpress = true;
+if(e.keyCode == 65) apress = true;
+if(e.keyCode == 83) spress = true;
+if(e.keyCode == 68) dpress = true;
+if(e.keyCode == 38) ipress = true;
+if(e.keyCode == 37) jpress = true;
+if(e.keyCode == 40) kpress = true;
+if(e.keyCode == 39) lpress = true;
+if(e.keyCode == 81) qpress = true;
+if(e.keyCode == 27) esqpress = true;
+if(e.keyCode == 16) sftpress = true;
+if(e.keyCode == 16) ctlpress = true;
+if(e.keyCode == 32) spacepress = true;
+});
+document.addEventListener("keyup",
+function(e){
+//console.log(e);
+//e.preventDefault();
+if(e.keyCode == 49) onepress = false;
+if(e.keyCode == 50) twopress = false;
+if(e.keyCode == 87) wpress = false;
+if(e.keyCode == 65) apress = false;
+if(e.keyCode == 83) spress = false;
+if(e.keyCode == 68) dpress = false;
+if(e.keyCode == 38) ipress = false;
+if(e.keyCode == 37) jpress = false;
+if(e.keyCode == 40) kpress = false;
+if(e.keyCode == 39) lpress = false;
+if(e.keyCode == 81) qpress = false;
+if(e.keyCode == 27) esqpress = false;
+if(e.keyCode == 16) sftpress = false;
+if(e.keyCode == 16) ctlpress = false;
+if(e.keyCode == 32) spacepress = false;
+});
+document.addEventListener("contextmenu",function(e) {
+    //Do something
+    e.preventDefault();
+    e.stopPropagation();
+});
+displayC.onmousedown = function(e){
+if(e.button == 0) mouse1press = true;
+if(e.button == 2) mouse2press = true;
+}
+displayC.onmouseup = function(e){
+if(e.button == 0) mouse1press = false;
+if(e.button == 2) mouse2press = false;
+}
+displayC.onmousemove = function(e){
+rect = displayC.getBoundingClientRect();
+mouseX=(e.clientX-rect.left)*
+width/displayWidth-20; 
+mouseY=(e.clientY-rect.top)*
+height/displayHeight-40;
+}
+sonichuImg = new Image();
+//sonichuImg.src = "sonichu.png";
+displaySonichu = function(){
+ctx.drawImage(sonichuImg,
+this.x-100,this.y-200,this.w+200,this.h+200);
+}
+
+collideRect = function(obj1,obj2){
+if (hitTestRectCoords(
+obj1.x, obj1.y, obj1.w, obj1.h,
+obj2.x, obj2.y, obj2.w, obj2.h)){
+this.xPen = 0; this.yPen = 0;
+if (obj1.x+obj1.w/2<obj2.x+obj2.w/2){
+xPen = obj1.x + obj1.w - obj2.x;
+}else{
+xPen = obj2.x + obj2.w - obj1.x;
+}
+if (obj1.y+obj1.h/2<obj2.y+obj2.h/2){
+yPen = obj1.y + obj1.h - obj2.y;
+}else{
+yPen = obj2.y + obj2.h - obj1.y;
+}
+if (xPen > yPen){
+if (obj1.y > obj2.y){
+if (obj1.yVel < 0)obj1.yVel = 1;
+obj1.y += yPen;
+}else{
+if (obj1.yVel > 0)obj1.yVel = 1;
+obj1.y -= yPen;
+}}else{
+obj1.xVel = 0;
+if (obj1.x > obj2.x){
+obj1.x += xPen;
+}else{
+obj1.x -= xPen;
+}}}}
+
+removeFromArray = function(index, arr){
+tempArray = []; x = 0;
+for (i = 0; i < arr.length; i++){
+if(i!=index)tempArray[i-x] = arr[i];
+else x++;}return tempArray;}
+
+lineInRect = function(line,rect){
+slope=(line.y1-line.y2)/(line.x1-line.x2);
+x = line.x1; y = line.y1;
+w = line.x2-line.x1; h = line.y2-line.y1;
+if (line.x2 < line.x1){
+x = line.x2; w = line.x1-line.x2;	}
+if (line.y2 < line.y1){
+y = line.y2; h = line.y1-line.y2;	}
+if (
+x < rect.x + rect.w &&x + w > rect.x &&
+y < rect.y + rect.h &&y + h > rect.y){
+x = rect.x; 
+y = (x-line.x1)*slope+line.y1;
+if (y > rect.y && y < rect.y+rect.h)
+return true;
+x = rect.x+rect.w; 
+y = (x-line.x1)*slope+line.y1;
+if (y > rect.y && y < rect.y+rect.h)
+return true;
+y = rect.y; 
+x = (y-line.y1)/slope+line.x1;
+if (x > rect.x && x < rect.x+rect.w)
+return true;
+y = rect.y+rect.h; 
+x = (y-line.y1)/slope+line.x1;
+if (x > rect.x && x < rect.x+rect.w)
+return true;}return false;}
+
+defaultMove = function(room){
+if (this.health <= 0) this.dead = true;
+if (this.yVel > 15) this.yVel = 15;
+this.yVel+=.5; 	
+if (Math.abs(this.xVel) < 1) this.xVel = 0; 
+if (this.yVel < 0 && this.yVel > -1) this.yVel = 0; 
+this.y+=this.yVel; this.x+=this.xVel;
+this.canJump = false;
+this.x+=5;this.w-=10;this.y++;this.h++;
+if(this.yVel>0 && room.hitTestObstacles(this)){
+this.canJump=true; this.xVel *= .8;
+}
+this.x-=5;this.w+=10;this.y--;this.h--;
+room.collideObstacles(this);
+if (room.hitTestObstacles(this)) this.hurt(1);
+if (this.iframe>0){
+this.iframe--;this.alpha = .3;
+} else this.alpha = 1;
+}
+
+defaultHurt = function(damage,obj){
+if (true){
+this.health -= damage;
+this.iframe = 30;
+this.yVel = -3;
+if (obj!=undefined){
+angle = Math.atan2(
+obj.y+obj.h/2-this.y-this.h/2,
+obj.x+obj.w/2-this.x-this.w/2);
+this.xVel=-Math.cos(angle)*2;
+this.yVel-=Math.sin(angle)*2;
+}}}
+
+Slash = function(){
+this.x1=0;this.y1=0;this.x2=0;this.y2=0;
+this.x=0;this.y=0;this.f=0;this.angle=0;
+this.r = 50;
+this.hitTest = function(obj){
+if (this.f == 1 &&
+lineInRect(this,obj))return true;
+return false;
+}
+this.update = function(){
+if (this.f > 20) this.dead = true;
+this.angle = Math.atan2(
+this.y2-this.y1,this.x2-this.x1);
+this.f++;
+}
+this.display = function(){
+angle = Math.atan2(
+this.y2-this.y1,this.x2-this.x1);
+radius = this.r;
+if (this.f>11)ctx.globalAlpha=(21-this.f)*.1;
+if (this.f < 3) radius = this.f*radius/3;
+vX = this.x1+this.x+Math.cos(this.angle)*radius;
+vY = this.y1+this.y+Math.sin(this.angle)*radius;
+ctx.fillStyle = "#ffffff";
+ctx.beginPath();
+ctx.ellipse(vX,vY,1,radius,
+this.angle-Math.PI/2,Math.PI,false);
+ctx.ellipse(vX,vY,1,radius,
+this.angle+Math.PI/2,Math.PI,false);
+ctx.fill(); ctx.globalAlpha = 1;
+}}
+
+randy = 0;
+getRandom = function(){
+randy+=Math.cos(randy)*10;
+if (randy > 100) randy = 0;
+return Math.sin(randy*randy)/
+Math.PI;
+}
+
+drawLightning = function(x1,y1,x2,y2,room){
+angle = Math.atan2(y2-y1,x2-x1);
+rcos = Math.cos(angle);
+rsin = Math.sin(angle);
+ctx.beginPath();
+oldX = x1+rcos+getRandom()*20;
+oldY = y1+rsin+getRandom()*20;
+for (n=0;n<Math.abs((x2-x1)/rcos);n+=15){
+ctx.moveTo(oldX,oldY);
+oldX = x1+n*rcos+getRandom()*25;
+oldY = y1+n*rsin+getRandom()*25;
+ctx.lineTo(oldX,oldY);
+}
+ctx.lineWidth = 8;
+ctx.strokeStyle = "#0000f0";
+ctx.translate(-1,0); ctx.stroke();
+ctx.translate(0,-1); ctx.stroke();
+ctx.translate(2,0);  ctx.stroke();
+ctx.translate(0,2);  ctx.stroke(); 
+ctx.translate(-1,-1);
+ctx.lineWidth = 3;
+ctx.strokeStyle = "#f0f0f0";
+ctx.stroke();
+}
+
+hiraishinImg = new Image();
+hiraishinImg.src = "sword.png";
+hiraishinAngledImg = new Image();
+hiraishinAngledImg.src = "swordAngled.png";
+chidoriImg = new Image();
+chidoriImg.src = "knife.png";
+chidoriAngledImg = new Image();
+chidoriAngledImg.src = "knifeAngled.png";
+kirinImg = new Image();
+kirinImg.src = "kirin.png";
+
+Blade = function(){
+this.x1 = 0; this.y1 = 0; 
+this.x2 = 80; this.y2 = 0;
+this.a = 0; this.r = 80; 
+this.f = 0;
+this.size = 60;
+this.img = hiraishinImg;
+this.stopped = false;
+this.target = undefined;
+this.oldx = 0; this.oldy = 0;
+this.wastarget = false;
+this.update = function(room){
+if (this.target!=undefined) {
+if (this.wastarget) {
+this.x1+=this.target.x - oldx;
+this.y1+=this.target.y - oldy;
+}
+oldx = this.target.x; oldy = this.target.y;
+this.wastarget = true;
+} else this.wastarget = false;
+this.f++;
+if(!this.stopped){
+this.x1+=this.xVel; this.y1+=this.yVel;
+this.yVel+=.8;
+this.a = Math.atan2(this.yVel,this.xVel)
+this.x2 = this.x1+Math.cos(this.a)*this.size;
+this.y2 = this.y1+Math.sin(this.a)*this.size;
+}
+if (this.target==undefined) this.stopped=false;
+for (i=0;i<room.obstacles.length;i++){
+if (lineInRect(this,room.obstacles[i])){
+this.xVel = 0; this.yVel = 0;
+this.stopped = true;
+}}}
+this.hitTest = function(obj){
+return lineInRect(this,obj)
+}
+this.display = function(){
+ctx.fillStyle = "#00ffff";
+//ctx.fillRect(this.x1,this.y1,100,100);
+ctx.translate(this.x1+Math.cos(this.a)*this.size,
+              this.y1+Math.sin(this.a)*this.size);
+ctx.rotate(this.a);
+ctx.drawImage(this.img,-this.size,0,this.size,15)
+ctx.rotate(-this.a);
+ctx.translate(-this.x1-Math.cos(this.a)*this.size,
+              -this.y1-Math.sin(this.a)*this.size);
+}}
+
+arakiMaxHealth = 5;
+heartImg = new Image(); heartImg.src = "heart.png";
+hudSwordImg = new Image(); 
+hudSwordImg.src = "hud sword.png";
+hudKnifeImg = new Image(); 
+hudKnifeImg.src = "hud knife.png";
+
+Player = function(x,y,w,h){
+this.x=400;if(x!=undefined){this.x=x;}
+this.y=750;if(y!=undefined){this.y=y;}
+this.w=40;if(w!=undefined){this.w=w;}
+this.h=80;if(h!=undefined){this.h=h;}
+this.img=new Image(); this.img.src="araki.png";
+this.armImg=new Image(); this.armImg.src="arakiArm.png";
+this.speed=5;this.yVel=0;this.xVel=0;
+this.health=5; this.iframe=0; 
+this.dead=false; this.deathTimer = 0;
+this.z1Timer=0; this.z2Timer=0;
+this.canJump=false;
+this.attacks = new Array(10);
+this.hiraishin = undefined;
+this.slh1f=0; this.slh1a=0; 
+this.slh2f=0; this.slh2a=0; 
+this.coatf=0; this.legsf=0;
+this.facing = "right";
+this.hurt = function(damage,obj){
+if (this.iframe==0){
+this.health -= damage; this.yVel = -3;
+if (obj!=undefined){
+angle = Math.atan2(
+obj.y+obj.h/2-this.y-this.h/2,
+obj.x+obj.w/2-this.x-this.w/2);
+this.xVel=-Math.cos(angle)*obj.h/20;
+this.yVel-=Math.sin(angle)*obj.h/20;
+}
+this.iframe = 40;
+}}
+this.move = defaultMove;
+// slashing attacks
+this.attack = function(targets){
+if (this.slh1f > 0) this.slh1f++;
+if (this.slh1f > 20) this.slh1f = 0; 
+if (this.slh2f > 0) this.slh2f++;
+if (this.slh2f > 20) this.slh2f = 0; 
+if (this.z1Timer != 0) this.z1Timer--;
+if (this.z2Timer != 0) this.z2Timer--;
+if (!this.dead){
+if (!spacepress&&(
+(mouse1waspress&&!mouse1press&&hasHiraishin)|| 
+(mouse2waspress&&!mouse2press&&hasChidori))&& 
+this.slh1f==0&&this.hiraishin==undefined){
+angle = Math.atan2(
+room.cameraY+mouseY-this.y,room.cameraX+mouseX-this.x);
+a = new Slash();
+a.x1=this.x+this.w/2+Math.cos(angle)*25;
+a.y1=this.y+this.h/2+Math.sin(angle)*25;
+if (mouse1waspress && !mouse1press){
+this.slh1f = 1; this.slh1a = angle; a.x1+=10;
+a.x2=a.x1+Math.cos(angle)*100;
+a.y2=a.y1+Math.sin(angle)*100;
+} 
+if (mouse2waspress && !mouse2press){
+this.slh2f=1; this.slh2a=angle; a.r=30; a.x1-=10;
+a.x2=a.x1+Math.cos(angle)*60;
+a.y2=a.y1+Math.sin(angle)*60;
+}
+addToArray(a,this.attacks);
+this.slha = angle; this.slhf = 1;      
+}
+// throw hiraishin
+if (hasHiraishin){
+if (this.z1Timer == 0){ 
+if (spacepress && !mouse1waspress && mouse1press){
+if (this.hiraishin == undefined){ 
+angle = Math.atan2(
+room.cameraY+mouseY-this.y,
+room.cameraX+mouseX-this.x);
+this.slh1f = 1; this.slh1a = angle;
+a = new Blade();
+a.size=40; a.a=angle; a.olda=angle;
+a.xVel=Math.cos(angle)*20; a.yVel=Math.sin(angle)*20;
+a.x1=this.x+this.w/2; a.y1=this.y+this.h/2;
+a.x2=a.x1+a.xVel*3; a.y2=a.y1+a.yVel*3;
+this.hiraishin = a;
+} else  {
+this.z1Timer = 60;
+if (this.hiraishin.target!=undefined)
+this.hiraishin.target.hurt(1,this);
+this.thunder1 = {
+x1:this.x+this.w/2,y1:this.y+this.h/2,
+x2:this.hiraishin.y1,y2:this.hiraishin.y1,f:30};
+if (this.thunder2!=undefined){
+this.thunder1.x1 = this.thunder2.x2;
+this.thunder1.y1 = this.thunder2.y2;
+}
+this.thunder1.c = document.createElement("canvas");
+this.thunder1.ctx = this.thunder1.c.getContext("2d");
+this.x=this.hiraishin.x1-this.w/2;
+this.y=this.hiraishin.y1-this.h/2;
+this.thunder1.x2 = this.x+this.w/2;
+this.thunder1.y2 = this.y+this.h/2;
+}}}}
+if (this.hiraishin!=undefined &&
+this.hiraishin.x1>0 && this.hiraishin.y1>0 &&
+this.hiraishin.x1<room.w && this.hiraishin.y1<room.h)
+this.hiraishin.update(room);
+}
+// throw chidori
+if (hasChidori){ 
+if (!this.dead){
+if (this.z2Timer == 0){ 
+if (spacepress && !mouse2waspress && mouse2press){
+if (this.chidori == undefined){
+angle = Math.atan2(
+room.cameraY+mouseY-this.y,room.cameraX+mouseX-this.x);
+this.slh2f = 1; this.slh2a = angle;
+attack = new Blade();
+attack.size = 40;
+attack.img = chidoriImg;
+attack.a = angle; attack.olda = angle;
+attack.xVel = Math.cos(angle)*20;
+attack.yVel = Math.sin(angle)*20;
+attack.x1=this.x+this.w/2+Math.cos(angle)*0;
+attack.y1=this.y+this.h/2+Math.sin(angle)*0;
+attack.x2=this.x+this.w/2+Math.cos(angle)*60;
+attack.y2=this.y+this.h/2+Math.sin(angle)*60;
+this.chidori  = attack;
+} else if (this.chidori.stopped) {
+this.z2Timer = 60;
+if (this.chidori.target!=undefined)
+this.chidori.target.hurt(1,this);
+this.thunder2 = {
+x1:this.x+this.w/2,y1:this.y+this.h/2,
+x2:this.chidori.y1,y2:this.chidori.y1,f:30};
+if (this.thunder1!=undefined){
+this.thunder2.x1 = this.thunder1.x2;
+this.thunder2.y1 = this.thunder1.y2;
+}
+this.thunder2.c = document.createElement("canvas");
+this.thunder2.ctx = this.thunder2.c.getContext("2d");
+this.x=this.chidori.x1-this.w/2;
+this.y=this.chidori.y1-this.h/2;
+this.thunder2.x2 = this.x+this.w/2;
+this.thunder2.y2 = this.y+this.h/2;
+}}}
+}
+if (this.chidori!=undefined &&
+this.chidori.x1>0 && this.chidori.y1>0 &&
+this.chidori.x1<room.w && this.chidori.y1<room.h)
+this.chidori.update(room);
+}
+// thunder
+for (w=0; w<2; w++){
+thunder = undefined;
+if (w==0) thunder = this.thunder1;
+if (w==1) thunder = this.thunder2;
+if (thunder!=undefined){
+thunder.f--;
+if (thunder.f < 30) {
+if (w==0) this.hiraishin = undefined;
+if (w==1) this.chidori = undefined;
+}
+if (thunder.f<=0) {
+if (w==0) this.thunder1 = undefined;
+if (w==1) this.thunder2 = undefined;
+}}}
+if (this.thunder1!=undefined || 
+    this.thunder2!=undefined){ 
+if(this.thunder1!=undefined)thunder=this.thunder1;
+if(this.thunder2!=undefined)thunder=this.thunder2;
+if (this.thunder1!=undefined&&
+	   this.thunder2!=undefined) {
+if (this.thunder1.f<this.thunder2.f){
+thunder = this.thunder2;
+if (thunder.f < 25){ 
+this.x=thunder.x2-this.w/2;this.y=thunder.y2-this.h/2;
+} else {
+this.x=thunder.x1-this.w/2;this.y=thunder.y1-this.h/2;
+}}}}
+// deal with slashes
+for (i = 0; i < this.attacks.length; i++){
+if (this.attacks[i]!=undefined){
+this.attacks[i].update();
+if (this.attacks[i].dead) this.attacks[i]=undefined;
+}}
+// hit test attacks
+if (targets!=undefined){
+for (i=0; i<targets.length; i++){
+for (e = 0; e < this.attacks.length; e++){
+if (this.attacks[e] != undefined &&
+this.attacks[e].hitTest(targets[i]))
+targets[i].hurt(2,this);
+}
+if (this.hiraishin != undefined &&
+!this.hiraishin.stopped &&
+this.hiraishin.hitTest(targets[i])) {
+this.hiraishin.target = targets[i];
+this.hiraishin.stopped = true;
+targets[i].hurt(1,this);
+}
+if (this.chidori != undefined &&
+!this.chidori.stopped &&
+this.chidori.hitTest(targets[i])) {
+this.chidori.target = targets[i];
+this.chidori.stopped = true;
+targets[i].hurt(1,this);
+}
+if (this.thunder1 != undefined &&
+    this.thunder1.f == 28 &&
+lineInRect(this.thunder1,targets[i]))
+targets[i].hurt(2,this);
+if (this.thunder2 != undefined &&
+    this.thunder2.f == 28 &&
+lineInRect(this.thunder2,targets[i]))
+targets[i].hurt(2,this);
+
+}}}
+// araki update 
+this.update=function(room){
+if (this.deathTimer > 120) reset();
+if (!this.dead){
+if(this.iframe <= 15){
+if(this.canJump&&wpress)this.yVel=-11;
+if(apress) {
+this.x-=this.speed; this.facing="left";
+} 
+if(dpress) {
+this.x+=this.speed; this.facing="right";
+}}
+if (this.iframe==0){
+if (this.coatf>=4) this.coatf=0;
+if(apress || dpress) {
+if (this.legsf==0) this.legsf = 1;
+this.legsf+=.08;
+if (this.legsf >= 4) this.legsf = 1;
+} else this.legsf = 0;
+}
+} else this.deathTimer++;
+this.move(room);
+if (!this.canJump) {
+if (this.yVel < 0) this.legsf = 1;
+else this.legsf = 3;
+}}
+this.display = function(){
+//translate forward
+if (this.facing == "left"){
+ctx.translate((this.x+this.w/2)*2,0);
+ctx.scale(-1,1);
+}
+/*show the player in transition between 
+the original position and the sword.*/
+t1 = this.thunder1; t2 = this.thunder2;
+ctx.globalAlpha = this.alpha;
+if ((t1!=undefined&&t1.f>15)||(t2!=undefined&&t2.f>15))
+ctx.globalAlpha = 0;
+if (t1!=undefined || t2!=undefined){
+if (t1!=undefined) thunder=t1; if (t2!=undefined) thunder=t2;
+if (t1!=undefined&& t2!=undefined) {
+if(t1.f<t2.f) thunder=t2; else thunder = t1;	
+}
+if ((thunder!=undefined&&thunder.f>10)){
+ctx.globalAlpha = 1;
+ctx.drawImage(this.img,0,64,32,32,
+this.x-this.w/2,this.y,this.w*2,this.h);
+}}
+//show the players legs
+if (this.dead) ctx.globalAlpha = 0;
+this.imgX = Math.floor(this.legsf)*32; this.imgY = 64;
+if (Math.floor(this.legsf)==1||Math.floor(this.legsf)==3)
+down = true; else down = false;
+if (this.dead) ctx.globalAlpha = 1;
+if (this.dead) { this.imgX=0; this.imgY=128; }
+else this.imgY=96;
+ctx.drawImage(this.img,
+this.imgX,this.imgY,32,32,
+this.x-this.w/2,this.y,this.w*2,this.h);;
+// show the torso 
+if (this.dead) ctx.globalAlpha = 0;
+if ((t1!=undefined&&t1.f>15)||(t2!=undefined&&t2.f>15)) 
+ctx.globalAlpha = 0;
+if (down) this.y-=5;
+if (this.facing == "right") this.imgX = 0;
+else this.imgX = 32;
+ctx.drawImage(this.img,
+this.imgX,32,32,32,
+this.x-this.w/2,this.y,this.w*2,this.h);
+// show the players head
+if (this.dead) ctx.globalAlpha = 0;
+ctx.drawImage(this.img,0,0,32,32,
+this.x-this.w/2,this.y,this.w*2,this.h)
+// translate back
+if (this.facing == "left"){
+ctx.scale(-1,1);
+ctx.translate(-(this.x+this.w/2)*2,0);
+}
+// show the left arm
+ctx.translate(this.x+34,this.y+31);
+if (this.slh1f > 0) ctx.rotate(this.slh1a-Math.PI/2);
+ctx.drawImage(this.armImg,-3,-3,6,30);
+if (hasHiraishin && this.hiraishin == undefined){
+img = hiraishinImg;
+ctx.translate(0,30);
+if (this.slh1f > 0) ctx.rotate(Math.PI/2); 
+else if(this.facing=="left") img=hiraishinAngledImg;
+ctx.drawImage(img,0,-8,40,16);
+if (this.slh1f > 0) ctx.rotate(-Math.PI/2);
+ctx.translate(0,-30);
+}
+if (this.slh1f > 0) ctx.rotate(-this.slh1a+Math.PI/2);
+ctx.translate(-this.x-34,-this.y-31);
+// show the right arm
+ctx.translate(this.x+08,this.y+31);
+if (this.slh2f > 0) ctx.rotate(this.slh2a-Math.PI/2);
+ctx.scale(-1,1);
+ctx.drawImage(this.armImg,-3,-3,6,30);
+if (hasChidori && this.chidori == undefined){
+img = chidoriImg;
+ctx.translate(0,30);
+if (this.slh2f > 0) ctx.rotate(Math.PI/2); 
+else if(this.facing=="right") img=chidoriAngledImg;
+ctx.drawImage(img,0,-8,40,16);
+if (this.slh2f > 0) ctx.rotate(-Math.PI/2);
+ctx.translate(0,-30);
+}
+ctx.scale(-1,1);
+if (this.slh2f > 0) ctx.rotate(-this.slh2a+Math.PI/2);
+ctx.translate(-this.x-08,-this.y-31);
+if (down) this.y+=5;
+ctx.globalAlpha = 1;
+}
+this.displayAttacks = function(room){
+for (w = 0; w < 2; w++){
+if (w==0) h = this.hiraishin;
+if (w==1) h = this.chidori;
+if (h != undefined){
+h.y1-=room.cameraY;h.x1-=room.cameraX; 
+h.x2-=room.cameraX; h.y2-=room.cameraY;
+h.display();
+h.x1+=room.cameraX; h.y1+=room.cameraY;
+h.x2+=room.cameraX; h.y2+=room.cameraY;
+}}
+for (i = 0; i < this.attacks.length; i++){
+if (this.attacks[i]!=undefined){
+a = this.attacks[i]; 
+a.x-=room.cameraX; a.y-=room.cameraY;
+a.display();
+a.x+=room.cameraX; a.y+=room.cameraY;
+}}
+this.x -= room.cameraX; this.y -= room.cameraY;
+// show thunder
+for (w=0; w<2; w++){
+thunder = undefined;
+if (w==0) thunder=this.thunder1;
+if (w==1) thunder=this.thunder2;
+if (thunder!=undefined){ 
+if (thunder.f > 27){
+thunder.c = document.createElement("canvas");
+thunder.c.width = room.w;
+thunder.c.height = room.h;
+ctx = thunder.c.getContext("2d");
+drawLightning(
+thunder.x1,thunder.y1,thunder.x2,thunder.y2,room);
+ctx = c.getContext("2d");
+}
+ctx.globalAlpha = thunder.f/30+.2;
+if (thunder.f <= 35)
+ctx.drawImage(thunder.c,
+-room.cameraX,-room.cameraY,room.w,room.h);
+ctx.globalAlpha = 1;
+}
+}
+this.x += room.cameraX; this.y += room.cameraY;
+for (i=0; i<arakiMaxHealth; i++){
+if (i < this.health)
+ctx.drawImage(heartImg,0,0,32,32,40+i*70,40,80,80);
+else 
+ctx.drawImage(heartImg,0,32,32,32,40+i*70,40,80,80);
+}
+if (hasHiraishin){
+if (this.z1Timer!=0){
+ctx.fillStyle="#404040"; ctx.fillRect(795,50,160,48);
+ctx.fillStyle="#707070"; 
+ctx.fillRect(795,50,160-this.z1Timer*160/60,48);
+} else {
+ctx.fillStyle="#707070"; ctx.fillRect(795,50,160,48);
+}
+if (this.hiraishin!=undefined || this.z1Timer!=0) 
+ctx.globalAlpha=.3; 
+else ctx.globalAlpha=1;
+ctx.drawImage(hudSwordImg,0,0,128,24,795,50,256,48);
+ctx.globalAlpha=1;
+ctx.drawImage(hudSwordImg,0,24,128,24,795,50,256,48);
+}
+if (hasChidori){
+if (!hasHiraishin) ctx.translate(0,-58);	
+if (this.z2Timer!=0){
+ctx.fillStyle="#404040"; ctx.fillRect(795,108,160,48);
+ctx.fillStyle="#707070"; 
+ctx.fillRect(795,108,160-this.z2Timer*160/60,48);
+} else {
+ctx.fillStyle="#707070"; ctx.fillRect(795,108,160,48);
+}
+if (this.chidori!=undefined || this.z2Timer!=0) 
+ctx.globalAlpha=.3; 
+else ctx.globalAlpha=1;
+ctx.drawImage(hudKnifeImg,0,0,128,24,795,108,256,48);
+ctx.globalAlpha=1;
+ctx.drawImage(hudKnifeImg,0,24,128,24,795,108,256,48);
+if (!hasHiraishin) ctx.translate(0,58);
+}
+ctx.globalAlpha = this.deathTimer/40-.5;
+if (this.deathTimer > 20)
+ctx.drawImage(youDiedImg,0,0,c.width,c.height);
+ctx.globalAlpha = 1;
+}
+}
+
+Togashi = function(){
+this.x=0; this.y=0; this.w=60; this.h=120;
+this.xVel = 0; this.yVel = 0;
+this.img = new Image();
+this.img.src = "togashi.png";
+this.move = defaultMove;
+this.apress = false; this.dpress = false;
+this.facing = "left";
+this.f = 0;
+this.throwing = false;
+this.hasKirin = false;
+this.zapping = false;
+this.update = function(room){
+this.throwing = false;
+this.zapping = false;
+this.move(room);
+if (this.apress) {
+this.x -= 5; this.facing = "left";
+} else if (this.dpress) {
+this.x += 5; this.facing = "right";
+}
+this.f+=.1;
+if (this.apress || this.dpress){
+this.f += .02;
+if (this.f > 3) this.f = .02;
+} else this.f = 0;
+}
+this.display = function(){
+this.imgX=0; this.imgY=0;
+if (!this.hasKirin) this.imgY = 48;
+if (this.f > 0) this.imgX = Math.floor(this.f)*48; 
+if (this.throwing) this.imgY = 96;
+if (this.zapping) this.imgY = 144;
+// translate forward 
+if (this.facing == "left") {
+ctx.translate(this.x*2+this.w,0); ctx.scale(-1,1);
+}
+ctx.drawImage(this.img,this.imgX,this.imgY,48,48,
+this.x-this.w/2,this.y,this.w*2,this.h);
+// translate back 
+if (this.facing == "left") {
+ctx.scale(-1,1); ctx.translate(-this.x*2-this.w,0);
+}
+}
+}
+
+youDiedImg = new Image();
+youDiedImg.src = "you died.png";
+hasHiraishin = false;
+hasChidori = false;
+
+// ODA
+odaImg = new Image();
+odaImg.src = "oda.png";
+Oda = function(x,y,w,h){
+this.x=700;if(x!=undefined){this.x=x;}
+this.y=400;if(y!=undefined){this.y=y;}
+this.w=40;if(w!=undefined){this.w=w;}
+this.h=80;if(h!=undefined){this.h=h;}
+this.img = odaImg;
+this.speed=5; this.yVel=0; this.xVel=0;
+this.health=2; this.iframe=0;
+this.canJump=false;
+this.color = "#990000";
+this.coatf=0; this.legsf=0; 
+this.atkf=0; this.rldf=0;
+this.facing = "right";
+// oda move
+this.hurt = defaultHurt;
+this.move = defaultMove;
+this.update=function(room){
+this.move(room);
+if  (!this.dead){
+if (!this.canJump) {
+if (this.yVel < 1) this.legsf = 1;
+else this.legsf = 3;
+} else this.legsf = 0;
+if(this.iframe>0){
+this.atkf=0; this.rldf=0;
+}} else this.h = 40;
+}
+// oda attacks 
+this.attacks = new Array(6);
+this.bullets = 0;
+this.hitTestAttacks = function(obj){
+for (b=0; b<this.attacks.length; b++){
+if (this.attacks[b]!=undefined && 
+    lineInRect(this.attacks[b],obj)){
+this.attacks[b] = undefined;
+return true;
+}}  
+return false;
+}
+this.shoot=function(angle){ 
+if (this.bullets < 6){
+this.bullets++;
+attack = makeObj(
+this.x+this.w/2,this.y+this.h/3,1,1);
+attack.color = "#d0d0d0";
+attack.angle = angle;
+attack.xVel=Math.cos(angle)*25;
+attack.yVel=Math.sin(angle)*25;
+attack.x1 = attack.x; attack.y1 = attack.y;
+attack.x+=attack.xVel*2;
+attack.y+=attack.yVel*2;
+attack.x2 = attack.x; attack.y2 = attack.y;
+attack.display = function(room){
+ctx.fillStyle = "#f0f0d0";
+for (f = 0; f < 20; f++){
+ctx.beginPath();
+ctx.arc(
+this.x2-f*this.xVel/10-room.cameraX,
+this.y2-f*this.yVel/10-room.cameraY,
+2-f/10,0,Math.PI*2);
+ctx.fill();
+}	
+}
+addToArray(attack,this.attacks);
+} else this.atkf = 0;
+}
+this.attack=function(obj,room){
+if (!this.dead){
+angle = Math.atan2(
+obj.y+obj.h/2-this.y-this.h/2,
+obj.x+obj.w/2-this.x+this.w/2);
+if (lineOfSight(this,obj,room.obstacles) &&
+    Math.abs(Math.sin(angle))<.5) {
+if (this.x+this.w/2>obj.x+obj.w/2) this.facing="left";
+else this.facing="right";
+}
+for (i=0; i<this.attacks.length; i++){
+if (this.attacks[i]!=undefined){
+a = this.attacks[i];
+a.x1 = a.x; a.y1 = a.y;
+a.x += a.xVel; a.y += a.yVel;
+a.x2 = a.x; a.y2 = a.y;
+if (room.hitTestObstacles(a) ||
+    a.x+a.w < 0 || a.y+a.h < 0 ||
+    a.x > room.w || a.y > room.h){
+this.attacks[i] = undefined;
+}}}
+if (this.rldf == 0 && this.atkf <= 2 && this.canJump &&
+Math.abs(obj.x+obj.w/2-this.x-this.w/2)<200){
+this.atkf = 0;
+if (obj.x+obj.w/2<this.x+this.w/2){
+this.yVel = -18; this.xVel = 5; 
+} else {
+this.yVel = -18; this.xVel = -5; 	
+}}
+if (this.bullets >= 6) {
+this.rldf+=.1;
+if (this.rldf < 2) this.rldf+=.1;
+if (this.rldf >= 15) {
+this.atkf = 0; this.rldf = 0; this.bullets = 0;
+if (lineOfSight(this,obj,room.obstacles) &&
+    Math.abs(Math.sin(angle))<.5)
+this.atkf = 1;
+}} else {
+if (this.atkf == 0 && this.bullets < 6){
+if (lineOfSight(this,obj,room.obstacles) &&
+    Math.abs(Math.sin(angle))<.5)
+this.atkf = 1;
+} else {
+if (this.atkf>=1){
+this.atkf+=.1;
+if (Math.floor(this.atkf) == 3) {
+if (this.atkf < 3.25) this.shoot(angle);
+this.atkf+=.5; 
+}
+if (this.atkf>=5) {
+if (lineOfSight(this,obj,room.obstacles) &&
+    Math.abs(Math.sin(angle))<.5) this.atkf = 2; 
+else this.atkf = 0;
+}}}}
+if (this.hitTestAttacks(obj)) obj.hurt(1,this);
+}}		
+// oda draw
+this.display = function(room){
+ctx.globalAlpha = this.alpha;
+//show the legs
+this.imgX = 0; 
+this.imgY = 64;
+if (this.imgX==32 || this.imgX==96) down=true;
+else down = false;
+if (this.facing == "left"){
+ctx.translate((this.x+this.w/2)*2,0);
+ctx.scale(-1,1);
+}
+if (this.dead) {
+ctx.globalAlpha = 0; down = false;
+}
+ctx.drawImage(this.img,
+this.imgX,this.imgY,32,32,
+this.x-this.w/2,this.y,this.w*2,this.h);
+// show the top half
+if (this.dead) ctx.globalAlpha = this.alpha;
+if (down) this.y+=5;
+if (this.bullets < 6){
+this.imgY=0; this.imgX=Math.floor(this.atkf)*32; 
+} else {
+this.imgY=32; this.imgX=Math.floor(this.rldf)*32;
+if (this.rldf > 4)
+this.imgX-=Math.floor((this.rldf-3)/2)*64;
+console.log(this.imgX);
+}
+if (this.dead) {
+this.imgX = 0; this.imgY = 96;
+}
+ctx.drawImage(this.img,
+this.imgX,this.imgY,32,32,
+this.x-this.w/2,this.y,this.w*2,this.h);
+if (this.facing == "left"){
+ctx.scale(-1,1);
+ctx.translate(-(this.x+this.w/2)*2,0);
+}
+if (down) this.y-=5;
+ctx.globalAlpha = 1;
+for (b=0; b<this.attacks.length; b++){
+if (this.attacks[b]!=undefined){
+this.attacks[b].display(room);
+}}}}
+
+kishimotoImg = new Image();
+kishimotoImg.src = "kishimoto.png";
+Kishimoto = function(){
+this.x=0; this.y=0; this.w=60; this.h=120;
+this.xVel=0; this.yVel=0; this.iframe=0;
+this.health = 6;
+this.dead = false;
+this.f = 0; this.atkf = 0;
+this.sitLevel = 1;
+this.img = kishimotoImg;
+this.alpha = 0;
+this.move = defaultMove;
+this.hurt = defaultHurt;
+this.anchor = undefined;
+this.update = function(room){
+if (!this.dead){
+this.f+=.1;
+if (this.f >= 1) this.f = 0;
+}
+this.move(room);
+}
+this.attack = function(obj,room){
+if (!this.dead) {
+if (lineOfSight(this,obj,room.obstacles)){
+if (obj.x+obj.w/2 < this.x+this.w/2) this.facing="left";
+else this.facing = "right";
+if (this.sitLevel > 0) this.sitLevel-=.2;
+else {
+if (this.atkf > 0) this.atkf+=.05;
+if (this.atkf >= 2) this.atkf=0;
+if (obj.y+obj.h > this.y && obj.y < this.y+this.h &&
+Math.abs(obj.x+obj.w/2-this.x-this.w/2)<180) {
+this.atkf+=.05;
+if (Math.floor(this.atkf) == 1) {
+obj.hurt(1); obj.yVel = -15;
+if (this.facing == "right") obj.xVel = 30;
+else obj.xVel = -30;
+}}
+}} else {	
+this.atkf = 0;
+if (this.sitLevel < 1) this.sitLevel+=.2;
+}}}
+this.display = function(){
+ctx.globalAlpha = this.alpha;
+this.imgX = 0; this.imgY = 0; 
+if (this.sitLevel <= 0) this.imgY = 96;
+if (this.sitLevel>0 && this.sitLevel<1)
+this.imgY = 48;
+if (this.atkf > 0) {
+this.imgX = Math.floor(this.atkf)*48;
+this.imgY = 144;
+}
+if (this.dead) {
+this.imgX = 0; this.imgY = 192;
+}
+ctx.translate(this.x+this.w/2,0); 
+if (this.facing == "right") ctx.scale(-1,1);
+ctx.drawImage(this.img,
+this.imgX,this.imgY,48,48,
+-this.w,this.y,this.w*2,this.h);
+if (this.atkf>1.3 && this.atkf<1.7){
+ctx.drawImage(this.img,48,192,24,48,
+-this.w-60,this.y,this.h,this.h);
+}
+if (this.facing == "right") ctx.scale(-1,1);
+ctx.translate(-this.x-this.w/2,0);
+}
+ctx.globalAlpha = 1;
+}
+
+spikeImg = new Image();
+spikeImg.src = "spike.png";
+Spike = function(){
+this.x=0; this.y=0; this.w=80; this.h=40;
+this.f = 0;
+this.xVel = 0; this.yVel = 0;
+this.health = 2; this.iframe = 0;
+this.img = spikeImg;
+this.oldX = this.x;
+this.facing = "right";
+this.move = defaultMove;
+this.hurt = defaultHurt;
+this.update = function(room){
+obstacle=0; touching=false;
+this.y+=1;
+for (r=0; r<room.obstacles.length; r++){
+if (hitTestRect(this,room.obstacles[r])){
+obstacle = r; touching=true;
+}}
+this.y-=1;
+if (!this.dead){
+if (this.oldX != this.x) {
+if (this.facing=="left") this.facing="right";
+else this.facing="left";
+}
+if (this.facing == "left") this.x-=3;
+else this.x+=3;
+this.f+=.2;
+if (this.f>=2) this.f=0;
+}
+this.x+=this.xVel;
+this.oldX = this.x;
+this.x-=this.xVel;
+if (touching){
+if (room.obstacles[obstacle].x>this.x)
+this.facing="right";
+if(room.obstacles[obstacle].x+
+room.obstacles[obstacle].w<this.x+this.w)
+this.facing="left";
+}
+this.move(room);
+}
+this.attack = function(obj){
+if (!this.dead && hitTestRect(this,obj) &&
+    this.iframe==0) obj.hurt(1,this);
+}
+this.display = function(){
+ctx.globalAlpha = this.alpha;
+if (this.dead) {
+this.f=0; this.imgY = 32;
+} else this.imgY = 0;
+if (this.facing == "right") {
+ctx.translate(this.x*2+this.w,0);
+ctx.scale(-1,1);
+}
+ctx.drawImage(this.img,
+Math.floor(this.f)*32,this.imgY,32,32,
+this.x,this.y-this.h,this.w,this.h*2);
+if (this.facing == "right") {
+ctx.scale(-1,1);
+ctx.translate(-this.x*2-this.w,0);
+}
+ctx.globalAlpha = 1;
+}
+}
+
+Door = function(){
+this.x = 0; this.y = 0;
+this.w = 160; this.h = 160;
+this.died = true;
+this.img = new Image();
+this.img.src = "door.png";
+this.button = {on:false};
+this.update = function(room,targets){
+this.h = 40;
+if (!this.button.on) {
+this.h = 150;
+for (t=0; t<targets.length; t++){
+if (hitTestRect(targets[t],this))
+targets[t].hurt(1);
+}
+this.h = 150;
+}
+}
+this.display = function(){
+if (this.button!=undefined&&
+!this.button.on) this.fx = 0; 
+else this.fx = 24;
+ctx.drawImage(this.img,
+this.fx,0,24,24,
+this.x,this.y,this.w,160);
+}}
+
+Button = function(){
+this.x = 0; this.y = 0;
+this.w = 60; this.h = 40;
+this.on = false; this.died = true;
+this.img = new Image();
+this.img.src = "button.png";
+this.hit = function(targets){
+for (i = 0; i < targets.length; i++){
+this.y+=15; this.h-=15;
+if (hitTestRect(this,targets[i])){
+targets[i].xVel*=.9;
+targets[i].yVel*=.9;
+if (targets[i].canJump!=undefined)
+targets[i].canJump = true;
+if (targets[i].yVel > 0)
+targets[i].yVel = 0;
+this.on = true; 	
+targets[i].y=this.y-targets[i].h;
+}
+this.y-=15; this.h+=15;
+}}
+this.update = function(room){
+this.on = false;
+if (room.time == "past"){
+this.died = false;
+} else {
+this.died = true;
+}}
+this.display=function(){
+if (this.on) this.fy = 6;
+else this.fy = 0;
+ctx.drawImage(this.img,
+0,this.fy,16,8,
+this.x-10,this.y,this.w+20,this.h);
+}}
+
+
+player = new Player();
+introOver = false;
+
+platImg1 = new Image();
+platImg2 = new Image();
+platImg1.src = "plateaus1.png";
+platImg2.src = "plateaus2.png";
+
+reset = function(){
+player = new Player();
+tempRoom = getRoom("spike0")	
+tempRoom.x = 1000;
+changeRoom(tempRoom);
+}
+
+showTextBox = function(s,obj,room){
+if (room!= undefined) obj.x-=room.cameraX;
+if (s.length < 25) {
+ctx.font = "small-caps 30px Sans-serif";
+ctx.fillStyle = "#000000";
+ctx.fillText(s,obj.x-s.length*6,obj.y-10);
+ctx.fillStyle = "#FfFfFf";
+ctx.fillText(s,obj.x-s.length*6-2,obj.y-12);
+} else {
+done = false;
+count = 25;
+while (!done){
+count--;
+if (count == 0) done = true;
+if (s.charAt(count)==" ") done = true;
+}
+s1 = s.slice(0,count);
+s2 = s.slice(count,s.length);
+ctx.font = "small-caps 30px Sans-serif";
+ctx.fillStyle = "#000000";
+ctx.fillText(s1,obj.x-s1.length*6,obj.y-35);
+ctx.fillStyle = "#FfFfFf";
+ctx.fillText(s1,obj.x-s1.length*6-2,obj.y-37);
+ctx.fillStyle = "#000000";
+ctx.fillText(s2,obj.x-s2.length*6,obj.y-10);
+ctx.fillStyle = "#FfFfFf";
+ctx.fillText(s2,obj.x-s2.length*6-2,obj.y-12);
+}
+if (room!= undefined) obj.x+=room.cameraX;
+}
+
+function getRoom(roomName,x,y,w,h){
+tr = new Room();
+tr.w = 1000; tr.h = 1000;
+if (x != undefined){
+tr.x = x; tr.y = y; tr.w = w; tr.h = h;
+}
+tr.findRoom = function(){
+oldX = this.x; oldY = this.y;
+changed = false;
+player.x+=oldX; player.y+=oldY;
+if (!hitTestRect(this,player)) {
+for (i=0; i<map.length; i++){
+if (hitTestRect(player,map[i])) {
+changed = true;
+player.x-=map[i].x; player.y-=map[i].y;
+if (player.hiraishin!=undefined){
+player.hiraishin.x1+=oldX-map[i].x; 
+player.hiraishin.y1+=oldY-map[i].y;
+}
+if (player.chidori!=undefined){
+player.chidori.x1+=oldX-map[i].x; 
+player.chidori.y1+=oldY-map[i].y;
+}
+if (player.thunder1!=undefined) {
+player.thunder1.x1+=oldX-map[i].x; 
+player.thunder1.y1+=oldY-map[i].y;
+player.thunder1.x2+=oldX-map[i].x; 
+player.thunder1.y2+=oldY-map[i].y;
+}
+if (player.thunder2!=undefined) {
+player.thunder2.x1+=oldX-map[i].x; 
+player.thunder2.y1+=oldY-map[i].y;
+player.thunder2.x2+=oldX-map[i].x; 
+player.thunder2.y2+=oldY-map[i].y;
+}
+room = getRoom(map[i].name,
+map[i].x,map[i].y,map[i].w,map[i].h);
+i=map.length;
+}}
+if (!changed) player.dead = true;
+}
+if (!changed){
+player.x-=oldX; player.y-=oldY;
+}
+}
+if (roomName == "intro0"){
+tr.w = 2000;
+tr.player = player;
+tr.player.x = 1900; tr.player.y = 780;
+tr.togashi = new Togashi();
+tr.togashi.x = 1750; tr.togashi.y = 750;
+tr.togashi.apress = true;
+tr.houseImg = new Image();
+tr.houseImg.src = "houses.png";
+tr.obstacles = [
+makeObj(-tr.w,870,tr.w*3,200),
+makeObj(0,200,100,500),
+makeObj(0,300,150,400),
+];
+for (i=0;i<tr.obstacles.length;i++)
+tr.obstacles[i].color="#755D65";
+tr.entitys = [
+tr.obstacles[0],tr.obstacles[1],
+tr.obstacles[2],
+tr.togashi,tr.player
+];
+tr.update = function(){
+apress = true; dpress = false; wpress = false;
+this.player = player;
+this.player.update(this);
+this.player.attack([]);
+this.togashi.update(this);
+this.moveCameraX(this.player);
+this.findRoom();
+}
+//rendering 
+tr.bg1 = platImg1; tr.bg2 = platImg2;
+tr.darken = function(){
+ctx.fillStyle = "#303060"; ctx.globalAlpha = .4;
+ctx.fillRect(0,0,c.width,c.height);
+ctx.globalAlpha = 1;
+}
+tr.display = function(){
+ctx.fillStyle = "#203050";
+ctx.fillRect(0,0,c.width,c.height);
+ctx.drawImage(this.bg2,
+-this.cameraX*.01,500,c.width*2,c.height/2);
+this.darken();
+ctx.drawImage(this.bg1,
+-this.cameraX*.05,500,c.width*2,c.height/2);
+this.darken();
+ctx.drawImage(this.houseImg,160,140,160,140,
+900-this.cameraX*.7,310,640,560);
+ctx.drawImage(this.houseImg,0,140,160,140,
+400-this.cameraX*.9,310,640,560);
+ctx.drawImage(this.houseImg,160,0,160,140,
+1350-this.cameraX*.8,310,640,560);
+ctx.drawImage(this.houseImg,0,0,160,140,
+700-this.cameraX*1,310,640,560);
+ctx.fillStyle = "#654540";
+ctx.fillRect(-this.cameraX,600,80,c.height);
+this.darken();
+this.displayEntitys();
+//this.player.displayAttacks(this);
+}} else if (roomName == "intro1"){
+tr.w = 1000;
+tr.player = player;
+tr.player.x = 900;
+tr.togashi = new Togashi();
+tr.togashi.x = 750; tr.togashi.y = 750;
+tr.togashi.apress = true;
+tr.sIndex = 0;
+tr.obstacles = [
+makeObj(-tr.w,870,tr.w*3,200),
+makeObj(-tr.w,0,tr.w*3,120),
+makeObj(0,0,100,1200),
+makeObj(950,0,100,700),
+];
+for (i=0;i<tr.obstacles.length;i++)
+tr.obstacles[i].color="#907060";
+tr.entitys = [
+tr.obstacles[0],tr.obstacles[1],
+tr.obstacles[2],tr.obstacles[3],
+tr.togashi,tr.player,
+];
+tr.admiralImg = new Image();
+tr.admiralImg.src = "admiral.png";
+tr.darken = function(){
+ctx.fillStyle = "#303060"; ctx.globalAlpha = .4;
+ctx.fillRect(0,0,c.width,c.height);
+ctx.globalAlpha = 1;
+}
+tr.admiralf = 0;
+tr.timer = 0;
+tr.update = function(){
+if (player.x < 800){
+if (mouse1press && !mouse1waspress) this.sIndex++;
+if (spacepress && !spacewaspress) this.sIndex++;
+wpress=false; dpress=false; apress=false; 
+this.togashi.apress = false;
+if (this.timer > 0) this.timer--;
+if (this.timer == 0) {
+this.timer = 80;
+this.sIndex++;
+}
+} else {
+this.timer = 20;
+apress=true; wpress=false; dpress=false;
+this.togashi.apress = true;
+}
+this.admiralf+=.05;
+if (this.admiralf>=2) this.admiralf=0;
+if (this.sIndex == 10 && this.timer > 5) apress = true;
+if (this.sIndex == 12) room = getRoom("intro2");
+this.player = player;
+this.player.update(this);
+this.player.attack([]);
+this.togashi.update(this);
+this.findRoom();
+this.moveCameraX(this.player);
+}
+//rendering 
+tr.display = function(){
+ctx.fillStyle = "#654540";
+ctx.fillRect(0,0,c.width,c.height);
+this.displayEntitys();
+ctx.drawImage(this.admiralImg,
+Math.floor(this.admiralf)*24,0,24,48,200,670,100,200);
+this.darken();
+if (this.sIndex == 1) {
+showTextBox("Thank you for choosing Togashi & Co Assassins!",
+this.togashi,this);
+} else if (this.sIndex == 2){
+showTextBox("How can we help you?",this.togashi,this);
+} else if (this.sIndex == 4){
+showTextBox("I want you to kill Emporer Fiddlesticks",
+makeObj(250,720,50,50),this);
+} else if (this.sIndex == 6){
+showTextBox("   Well,",this.togashi,this);
+} else if (this.sIndex == 7) {
+showTextBox("thats a tall order ",this.togashi,this);
+} else if (this.sIndex == 8) {
+showTextBox("it wont be cheap",this.togashi,this);
+} else if (this.sIndex == 9) {
+showTextBox("youll do it tough right?",
+makeObj(250,720,50,50),this);
+} else if (this.sIndex == 11) {
+showTextBox("of corse we can, no one is beyond our reach!",
+this.player,this);
+}
+}} else if (roomName == "intro2"){
+tr.w = 1000;
+tr.player = player;
+if (!introOver){
+tr.player.facing = "right";
+tr.player.x = 250;
+}
+tr.togashi = new Togashi();
+tr.togashi.x = 350; tr.togashi.y = 750;
+tr.togashi.apress = true;
+tr.sIndex = 0;
+if (introOver) tr.sIndex = 999;
+tr.obstacles = [
+makeObj(-tr.w,870,tr.w*3,200),
+makeObj(600,700,400,500),
+makeObj(0,400,100,800),
+];
+for (i=0;i<tr.obstacles.length;i++)
+tr.obstacles[i].color="#755D55";
+tr.entitys = [
+tr.obstacles[0],tr.obstacles[1],
+tr.obstacles[2],
+tr.togashi,tr.player,
+];
+tr.admiralf = 0;
+tr.timer = 0;
+tr.thunderF = 0;
+tr.thunderC = document.createElement("canvas");
+tr.thunderCtx = tr.thunderC.getContext("2d");
+tr.thunderC.width = tr.w;
+tr.thunderC.height = tr.h;
+tr.update = function(){
+console.log(introOver);
+if (introOver) this.togashi.y = 1000000;
+if (!introOver){
+if (this.sIndex < 9){
+if (mouse1press && !mouse1waspress) this.sIndex++;
+if (spacepress && !spacewaspress) this.sIndex++;
+wpress=false; dpress=false; apress=false; 
+this.togashi.apress = false;
+mouse1press = false; mouse2press = false;
+}
+if (this.sIndex > 15) this.togashi.dpress = true;
+if (this.timer > 0) this.timer--;
+if (this.timer == 0) {
+this.timer = 80;
+this.sIndex++;
+}
+if (this.sIndex > 8 || 
+(this.sIndex > 7 && this.timer < 50)) 
+    hasHiraishin = true;
+if (this.sIndex == 13 && this.timer == 80){
+this.kirin = new Blade();
+this.kirin.img = kirinImg;
+this.kirin.x1 = this.togashi.x + this.togashi.w/2;
+this.kirin.y1 = this.togashi.y + this.togashi.h/2;
+this.kirin.a= .1;
+this.kirin.xVel = 6;
+this.kirin.yVel = -20;
+this.kirin.size = 100;
+}
+}
+if (this.kirin!=undefined) this.kirin.update(this);
+this.player = player;
+this.player.update(this);
+this.player.attack([]);
+this.togashi.update(this);
+if (!introOver){
+if (this.sIndex == 13){
+if (this.timer > 30) this.togashi.throwing = true;
+}else if (this.sIndex == 14){
+if (this.timer > 75) {
+this.thunderC = document.createElement("canvas");
+this.thunderC.width = this.w;
+this.thunderC.height = this.h;
+this.thunderCtx = this.thunderC.getContext("2d");
+this.thunderF = 10;
+ctx = this.thunderCtx;
+drawLightning(
+this.togashi.x+this.togashi.w/2,
+this.togashi.y+this.togashi.h/2,
+this.kirin.x1,this.kirin.y1,room);
+ctx = c.getContext("2d");
+}
+if (this.timer > 55) this.togashi.zapping = true;
+if (this.timer == 75) {
+this.togashi.x = this.kirin.x1-this.togashi.w/2;
+this.togashi.y = this.kirin.y1-this.togashi.h/2;
+}
+if (this.timer == 70) this.kirin = undefined;
+}
+if (this.thunderF > 0) this.thunderF--;
+}
+if (!hitTestRect(this,this.player) &&
+this.sIndex > 8) introOver = true;
+this.findRoom();
+this.moveCameraX(this.player);
+}
+//rendering 
+tr.bg1 = platImg1; tr.bg2 = platImg2;
+tr.playerImg = new Image();
+tr.playerImg.src = "cutsceneTogashi.png";
+tr.display = function(){
+ctx.fillStyle = "#77aacc";
+ctx.fillRect(0,0,c.width,c.height);
+ctx.drawImage(this.bg2,
+-this.cameraX*.01,500,c.width*2,c.height/2);
+ctx.drawImage(this.bg1,
+-this.cameraX*.05,500,c.width*2,c.height/2);
+if (!introOver){
+if (this.sIndex > 3 && this.sIndex < 8) 
+this.player.x += 1000;
+}
+this.displayEntitys();
+if (this.sIndex > 7) this.player.displayAttacks(this);
+if (!introOver){
+if (this.kirin != undefined) {
+this.kirin.x1-=this.cameraX;
+this.kirin.display();
+this.kirin.x1+=this.cameraX;
+}
+if (this.thunderF != 0){
+ctx.globalAlpha = this.thunderF/10;
+ctx.drawImage(this.thunderC,-this.cameraX,0,this.w,this.h);
+ctx.globalAlpha = 1;
+}
+if (this.sIndex > 3 && this.sIndex < 8) 
+this.player.x -= 1000;
+if (this.sIndex < 16){
+switch (this.sIndex){
+case (2):
+showTextBox("Ok Kishimoto, youl be more effective if "+
+"you can use Kirin",this.togashi,this);
+break;
+case (3):
+showTextBox("Try it out",this.togashi,this);
+break;
+case (4):
+if (this.timer > 60){
+ctx.drawImage(this.playerImg,0,0,96,96,
+player.x-player.w*3.5,player.y-player.h*2,
+player.w*6,player.h*3);
+} else {
+showTextBox("woah!",this.togashi,this);
+ctx.drawImage(this.playerImg,96,0,96,96,
+player.x-player.w*3.5,player.y-player.h*2,
+player.w*6,player.h*3);
+}
+break; 
+case (5):
+showTextBox("wait I can do it!",this.player,this);
+ctx.drawImage(this.playerImg,192,0,96,96,
+player.x-player.w*3.5,player.y-player.h*2,
+player.w*6,player.h*3);
+break;
+case (6):
+ctx.drawImage(this.playerImg,192,0,96,96,
+player.x-player.w*3.5,player.y-player.h*2,
+player.w*6,player.h*3);
+break;
+case (7):
+showTextBox("here try this one instead",this.togashi,this);
+ctx.drawImage(this.playerImg,192,0,96,96,
+player.x-player.w*3.5,player.y-player.h*2,
+player.w*6,player.h*3);
+break;
+case (9):
+showTextBox("you can keep that, knives arent my style.",
+this.togashi,this);
+break;
+case (10):
+if (this.timer<60) showTextBox("left click and space to"+ 
+" transmit yourself like this", this.togashi,this);
+break;
+case (11):
+showTextBox("left click and space to"+ 
+" transmit yourself like this", this.togashi,this);
+break;
+case (12):
+if (this.timer > 40){
+this.togashi.facing = "right";
+this.togashi.throwing = true;
+}
+break;
+case (15):
+showTextBox("il meet you at fiddlesticks manor once"+
+" youre prepared",this.togashi,this);
+break;
+}}}}
+}else if (roomName == "spike0"){ 
+tr.w = 4000;
+tr.player = player;
+tr.spikes = new Array(4);
+for (i=0; i<tr.spikes.length; i++)
+tr.spikes[i] = new Spike();
+tr.spikes[0].x = 1050; tr.spikes[0].y = 730;
+tr.spikes[1].x = 1350; tr.spikes[1].y = 730;
+tr.spikes[2].x = 2050; tr.spikes[2].y = 630;
+tr.spikes[3].x = 2600; tr.spikes[3].y = 430;
+tr.obstacles = [
+makeObj(0,700,150,1000),
+makeObj(650,800,100,300),
+makeObj(1250,700,200,300),
+makeObj(2000,700,300,300),
+makeObj(2300,500,900,450),
+makeObj(2300,650,4000,450),
+makeObj(2250,450,300,450),
+makeObj(2800,50,260,400),
+makeObj(3550,575,4000,450),
+makeObj(3700,500,4000,450),
+makeObj(3600,0,1000,250),
+makeObj(-tr.w,870,tr.w*3,200)
+];
+for (i=0;i<tr.obstacles.length;i++)
+tr.obstacles[i].color="#755D55";
+tr.entitys = [
+tr.obstacles[0],tr.obstacles[1],
+tr.obstacles[2],tr.obstacles[3],
+tr.obstacles[4],tr.obstacles[5],
+tr.obstacles[6],tr.obstacles[7],
+tr.obstacles[8],tr.obstacles[9],
+tr.obstacles[10],
+tr.obstacles[11],
+tr.player,tr.spikes[0],tr.spikes[1], 
+tr.spikes[2],tr.spikes[3]
+];
+tr.update = function(){
+this.player = player;
+this.player.update(this);
+for (i=0; i<this.spikes.length; i++){
+this.spikes[i].update(this);
+this.spikes[i].attack(this.player,this);
+}
+this.player.attack([this.spikes[0],
+this.spikes[1],this.spikes[2],this.spikes[3]]);
+this.moveCameraX(this.player);
+this.findRoom();
+}
+//rendering 
+tr.bg1 = platImg1; tr.bg2 = platImg2;
+tr.display = function(){
+ctx.fillStyle = "#77aacc";
+ctx.fillRect(0,0,c.width,c.height);
+ctx.drawImage(this.bg2,
+-this.cameraX*.01,500,c.width*2,c.height/2);
+ctx.drawImage(this.bg1,
+-this.cameraX*.05,500,c.width*2,c.height/2);
+this.displayEntitys();
+this.player.displayAttacks(this);
+}} else if (roomName == "spike1"){
+tr.player = player;
+tr.door = new Door();
+tr.door.x = 700; tr.door.y = 540;
+tr.button = new Button();
+tr.button.x = 475; tr.button.y = 670;
+tr.door.button = tr.button;
+tr.spikes = new Array(1);
+for (i=0; i<tr.spikes.length; i++) 
+tr.spikes[i] = new Spike();
+tr.spikes[0].x = 1000; tr.spikes[0].y = 650;
+tr.obstacles = [
+tr.door,
+makeObj(0,500,150,800),
+makeObj(0,600,200,800),
+makeObj(0,700,2000,800),
+makeObj(0,0,150,300),
+makeObj(650,0,450,540),
+makeObj(1300,500,400,550),
+makeObj(1400,400,200,550),
+makeObj(0,0,1100,100),
+makeObj(1550,150,450,120),
+makeObj(1000,150,450,120),
+makeObj(1600,50,400,120),
+makeObj(1000,50,400,120),
+makeObj(1650,00,350,120),
+makeObj(1000,00,350,120),
+makeObj(1900,0,500,1000)
+];
+for (i=0;i<tr.obstacles.length;i++)
+tr.obstacles[i].color="#856D65";
+tr.targets = [
+];
+tr.entitys = [
+tr.door,tr.button,
+tr.obstacles[0],tr.obstacles[1],
+tr.obstacles[2],tr.obstacles[3],
+tr.obstacles[4],tr.obstacles[5],
+tr.obstacles[6],tr.obstacles[7],
+tr.obstacles[8],tr.obstacles[9],
+tr.obstacles[10],tr.obstacles[11],
+tr.obstacles[12],tr.obstacles[13],
+tr.obstacles[14],
+tr.obstacles[15],
+
+tr.spikes[0],
+tr.player
+];
+tr.update = function(){
+this.player = player;
+for (i=0; i<this.spikes.length; i++){
+this.spikes[i].update(this);
+this.spikes[i].attack(this.player);
+}
+this.door.update(this,
+[this.spikes[0],this.player]);
+this.button.update(this);
+this.button.hit([this.player,tr.spikes[0]]);
+this.player.update(this);
+this.player.attack(tr.spikes);
+this.moveCameraX(this.player);
+this.findRoom();
+}
+//rendering 
+tr.bg1 = platImg1; tr.bg2 = platImg2; 
+tr.display = function(){
+ctx.fillStyle = "#685852";
+ctx.fillRect(0,0,c.width,c.height);
+this.displayEntitys();
+this.player.displayAttacks(this);
+}} else if (roomName == "spike2"){
+//tr.w = 2000; tr.h = 2000;
+tr.treeImg = new Image();
+tr.treeImg.src = "tree.png";
+tr.player = player;
+tr.door = new Door();
+tr.door.x = 500; tr.door.y = 690;
+tr.button = new Button();
+tr.button.x = 800; tr.button.y = 820;
+tr.door.button = tr.button;
+tr.spike = new Spike();
+tr.spike.x = 750; tr.spike.y = 700;
+tr.obstacles = [
+makeObj(0,0,tr.w,100),
+makeObj(0,0,100,600),
+makeObj(0,800,300,750),
+makeObj(400,0,400,690),
+makeObj(0,850,1300,750),
+makeObj(0,950,1350,120),
+makeObj(1100,750,100,120),
+makeObj(1650,950,350,120),
+makeObj(1400,800,200,80),
+makeObj(1700,850,500,100),
+makeObj(1900,0,100,1000),
+tr.door
+];
+for (i=0;i<tr.obstacles.length;i++)
+tr.obstacles[i].color="#856D65";
+tr.targets = [
+];
+tr.entitys = [
+tr.obstacles[0],tr.obstacles[1],
+tr.obstacles[2],tr.obstacles[3],
+tr.obstacles[4],tr.obstacles[5],
+tr.obstacles[6],tr.obstacles[7],
+tr.obstacles[8],tr.obstacles[9],
+tr.obstacles[10],
+tr.door,tr.button,
+tr.player,tr.spike
+];
+tr.update = function(){
+this.player = player;
+this.player.update(this);
+this.player.attack([this.spike]);
+this.spike.update(this);
+this.spike.attack(this.player);
+this.door.update(this,
+[this.player,this.spike]);
+this.button.update(this);
+this.button.hit([this.player,this.spike]);
+this.moveCameraX(this.player);
+this.moveCameraY(this.player);
+this.findRoom();
+}
+//rendering 
+tr.display = function(){
+ctx.fillStyle = "#685852";
+ctx.fillRect(0,0,c.width,c.height);
+ctx.drawImage(this.treeImg,
+1000-this.cameraX,-c.height,c.width,c.height*2);
+this.displayEntitys();
+this.player.displayAttacks(this);
+}} else if (roomName == "spike3"){  
+//tr.w = 2500; tr.h = 1000;
+tr.player = player;
+tr.spikes = new Array(3) 
+for (i=0; i<tr.spikes.length; i++)
+tr.spikes[i] = new Spike();
+tr.spikes[0].x=1700; tr.spikes[0].y=1650;
+tr.spikes[1].x=1700; tr.spikes[1].y=1250;
+tr.spikes[2].x=1700; tr.spikes[2].y=850;
+tr.obstacles = [
+makeObj(1750,1800,1000,180),
+makeObj(1750,1800,1000,200),
+makeObj(1600,1700,250,210),
+makeObj(1800,1500,100,100),
+makeObj(1850,1400,100,100),
+makeObj(1450,1300,350,100),
+makeObj(1700,1100,300,100),
+makeObj(1850,1000,100,100),
+makeObj(1300,900,500,100),   
+makeObj(1900,800,150,800),
+makeObj(1300,150,700,100)
+];
+for (i=0;i<tr.obstacles.length;i++)
+tr.obstacles[i].color="#755D55";
+tr.targets = [];
+tr.entitys = [
+tr.obstacles[0],tr.obstacles[1],
+tr.obstacles[2],tr.obstacles[3],
+tr.obstacles[4],tr.obstacles[5],
+tr.obstacles[6],tr.obstacles[7],
+tr.obstacles[8],tr.obstacles[9],
+tr.obstacles[10],
+tr.spikes[0],tr.spikes[1],tr.spikes[2],
+tr.player
+];
+tr.update = function(){
+this.player = player;
+this.player.update(this);
+this.player.attack(this.spikes);
+for (i=0; i<this.spikes.length; i++)
+this.spikes[i].update(this);
+this.moveCameraX(this.player);
+this.moveCameraY(this.player);
+this.findRoom();
+}
+//rendering 
+tr.bg1 = platImg1; tr.bg2 = platImg2; 
+tr.display = function(){
+ctx.fillStyle = "#77aacc";
+ctx.fillRect(0,0,c.width,c.height);
+ctx.drawImage(this.bg2,
+-this.cameraX*.01,500,c.width*2,c.height/2);
+ctx.drawImage(this.bg1,
+-this.cameraX*.05,500,c.width*2,c.height/2);
+this.displayEntitys();
+this.player.displayAttacks(this);
+}} else if (roomName == "spike4"){
+tr.player = player;
+tr.spikes = new Array(1) 
+for (i=0; i<tr.spikes.length; i++)
+tr.spikes[i] = new Spike();
+tr.spikes[0].x=600; tr.spikes[0].y=400;
+tr.buttons = new Array(1);
+for (i=0; i<tr.buttons.length; i++)
+tr.buttons[i] = new Button();
+tr.buttons[0].x = 370; tr.buttons[0].y = 420;
+tr.doors = new Array(4);
+for (i=0; i<tr.doors.length; i++)
+tr.doors[i] = new Door();
+tr.doors[0].x = 180; tr.doors[0].y = 640;
+tr.doors[1].x = 330; tr.doors[1].y = 640;
+tr.doors[2].x = 480; tr.doors[2].y = 640;
+tr.doors[3].x = 630; tr.doors[3].y = 640;
+tr.doors[0].button = tr.buttons[0];
+tr.doors[1].button = tr.buttons[0];
+tr.doors[2].button = tr.buttons[0];
+tr.doors[3].button = tr.buttons[0];
+tr.obstacles = [
+makeObj(0,800,1000,500),
+makeObj(150,600,850,40),
+makeObj(450,500,250,150),
+makeObj(450,525,300,75),
+makeObj(300,450,400,50),
+makeObj(300,350,50,120),
+makeObj(300,350,350,50),
+makeObj(450,250,150,100),
+makeObj(0,150,550,100),
+tr.doors[0],tr.doors[1],tr.doors[2],
+tr.doors[3],
+];
+for (i=0;i<tr.obstacles.length;i++)
+tr.obstacles[i].color="#755D55";
+tr.entitys = [
+tr.obstacles[0],tr.obstacles[1],
+tr.obstacles[2],tr.obstacles[3],
+tr.obstacles[4],tr.obstacles[5],
+tr.obstacles[6],tr.obstacles[7],
+tr.obstacles[8],
+tr.obstacles[9],
+tr.obstacles[10],
+tr.obstacles[11],
+tr.doors[0],tr.doors[1],tr.doors[2],
+tr.doors[3],
+tr.buttons[0],
+tr.player,tr.spikes[0]
+];
+tr.update = function(){
+this.player = player;
+this.player.update(this);
+for (d=0; d<this.doors.length; d++)
+this.doors[d].update(this,
+[this.player,this.spikes[0]]);
+for (b=0; b<this.buttons.length; b++){
+this.buttons[b].update(this);
+this.buttons[b].hit([this.player,this.spikes[0]]);
+}
+this.spikes[0].update(this);
+this.spikes[0].attack(this.player);
+this.player.attack([tr.spikes[0]]);
+this.moveCameraX(this.player);
+this.moveCameraY(this.player);
+this.findRoom();
+}
+//rendering 
+tr.bg1 = platImg1; tr.bg2 = platImg2;
+tr.display = function(){
+ctx.fillStyle = "#77aacc";
+ctx.fillRect(0,0,c.width,c.height);
+ctx.drawImage(this.bg2,
+-this.cameraX*.01,700,c.width*2,c.height/2);
+ctx.drawImage(this.bg1,
+-this.cameraX*.05,600,c.width*2,c.height/2);
+ctx.fillStyle = "#77aacc";
+ctx.globalAlpha = .1;
+ctx.fillRect(0,0,c.width,c.height);
+ctx.globalAlpha = 1;
+this.displayEntitys();
+this.player.displayAttacks(this);
+}} else if (roomName == "spike5"){
+tr.treeImg = new Image();
+tr.treeImg.src = "tree.png";
+tr.player = player;
+tr.spike = new Spike();
+tr.spike.x = 470; tr.spike.y = 950;
+tr.buttons = new Array(2);
+for (i=0; i<tr.buttons.length; i++)
+tr.buttons[i] = new Button();
+tr.buttons[0].x = 460; tr.buttons[0].y = 950;
+tr.doors = new Array(5);
+for (i=0; i<tr.doors.length; i++){
+tr.doors[i] = new Door();
+tr.doors[i].button = tr.buttons[0]
+}
+tr.doors[0].x = 860; tr.doors[0].y = 650;
+tr.doors[1].x = 1010; tr.doors[1].y = 650;
+tr.doors[2].x = 1170; tr.doors[2].y = 650;
+tr.doors[3].x = 1330; tr.doors[3].y = 650;
+tr.doors[4].x = 1500; tr.doors[4].y = 650;
+tr.obstacles = [
+makeObj(350,750,300,100),
+makeObj(400,700,200,100),
+makeObj(0,600,300,40),
+makeObj(0,800,1000,50),
+makeObj(0,980,1000,50),
+makeObj(0,800,200,200),
+makeObj(800,800,2000,200),
+makeObj(800,0,10000,650),
+tr.doors[0],tr.doors[1],tr.doors[2],
+tr.doors[3],tr.doors[4],
+];
+for (i=0;i<tr.obstacles.length;i++)
+tr.obstacles[i].color="#755D55";
+tr.obstacles[0].color = "#d0d0d0";
+tr.obstacles[1].color = "#d0d0d0";
+tr.targets = [
+];
+tr.entitys = [
+tr.doors[0],tr.doors[1],tr.doors[2],
+tr.doors[3],tr.doors[4],
+tr.obstacles[0],tr.obstacles[1],
+tr.obstacles[2],tr.obstacles[3],
+tr.obstacles[4],tr.obstacles[5],
+tr.obstacles[6],
+tr.obstacles[7],
+tr.buttons[0],tr.buttons[1],	
+tr.player,tr.spike
+];
+tr.update = function(){
+for (d=0; d<this.doors.length; d++)
+this.doors[d].update(this,[this.player,this.spike]);
+for (d=0; d<this.buttons.length; d++){
+this.buttons[d].update(this);
+this.buttons[d].hit([this.player,this.spike]);
+}
+
+this.player = player;
+this.player.update(this);
+this.spike.update(this);
+this.spike.attack(this.player);
+this.player.attack([this.spike]);
+this.moveCameraX(this.player);
+this.moveCameraY(this.player);
+this.findRoom();
+}
+//rendering 
+tr.bg1 = platImg1; tr.bg2 = platImg2;
+tr.display = function(){
+ctx.fillStyle = "#77aacc";
+ctx.fillRect(0,0,c.width,c.height);
+ctx.drawImage(this.bg2,
+-this.cameraX*.01,700,c.width*2,c.height/2);
+ctx.drawImage(this.bg1,
+-this.cameraX*.05,600,c.width*2,c.height/2);
+ctx.fillStyle = "#77aacc";
+ctx.globalAlpha = .1;
+ctx.fillRect(0,0,c.width,c.height);
+ctx.globalAlpha = 1;
+ctx.fillStyle = "#685852";
+ctx.fillRect(0,800,c.width,200);
+ctx.drawImage(this.treeImg,
+-this.cameraX,0,c.width,c.height*2);
+this.displayEntitys();
+this.player.displayAttacks(this);
+}} else if (roomName == "slapper0"){
+//tr.w = 2000; tr.h = 2000;
+tr.player = player;
+tr.kishimoto = new Kishimoto();
+tr.kishimoto.x = 980; tr.kishimoto.y = 400;
+tr.obstacles = [
+makeObj(0,0,800,300),
+makeObj(1200,0,800,300),
+makeObj(0,50,850,200),
+makeObj(1150,50,800,200),
+makeObj(0,150,900,125),
+makeObj(1100,150,300,125),
+makeObj(0,250,950,50),
+makeObj(1050,250,300,50),
+makeObj(0,900,tr.w,100),
+makeObj(550,850,tr.w-1100,300),
+makeObj(600,800,tr.w-1200,300),
+makeObj(0,0,100,350),
+makeObj(900,550,200,100),
+makeObj(1500,700,100,60),
+makeObj(400,700,100,60),
+makeObj(1600,600,100,60),
+makeObj(300,600,100,60),
+makeObj(1300,500,200,60),
+makeObj(500,500,200,60),
+makeObj(1800,550,200,400)
+];
+for (i=0;i<tr.obstacles.length;i++)
+tr.obstacles[i].color="#907060";
+tr.targets = [];
+tr.entitys = [
+tr.obstacles[0],tr.obstacles[1],
+tr.obstacles[2],tr.obstacles[3],
+tr.obstacles[4],tr.obstacles[5],
+tr.obstacles[6],tr.obstacles[7],
+tr.obstacles[8],tr.obstacles[9],
+tr.obstacles[10],tr.obstacles[11],
+tr.obstacles[12],tr.obstacles[13],
+tr.obstacles[14],tr.obstacles[15],
+tr.obstacles[16],tr.obstacles[17],
+tr.obstacles[18],
+tr.obstacles[19],
+tr.kishimoto, tr.player,
+];
+tr.update = function(){
+this.player = player;
+this.player.update(this);
+this.kishimoto.update(this);
+this.kishimoto.attack(this.player,this);
+this.player.attack([this.kishimoto]);
+this.moveCameraX(this.player);
+this.moveCameraY(this.player);
+this.findRoom();
+}
+tr.display = function(){
+ctx.fillStyle = "#bbaa88";
+ctx.fillRect(0,0,c.width,c.height);
+this.displayEntitys();
+this.player.displayAttacks(this);
+}} else if (roomName == "oda0"){
+//tr.w = 2500; tr.h = 1000;
+tr.player = player;
+tr.oda = new Oda();
+tr.oda.x = 925; tr.oda.y = 650;
+tr.obstacles = [
+makeObj(-tr.w,900,tr.w*3,200),
+makeObj(0,500,150,800),
+makeObj(0,700,200,800),
+makeObj(0,0,350,300),
+makeObj(350,0,100,560),
+makeObj(500,800,200,200),
+makeObj(550,700,100,200),
+makeObj(900,700,100,800),
+makeObj(1200,600,100,800),
+makeObj(1700,0,500,120),
+makeObj(1750,-200,500,450),
+makeObj(1500,350,250,750),
+];
+for (i=0;i<tr.obstacles.length;i++)
+tr.obstacles[i].color="#755D55";
+tr.targets = [
+];
+tr.entitys = [
+tr.obstacles[0],tr.obstacles[1],
+tr.obstacles[2],tr.obstacles[3],
+tr.obstacles[4],tr.obstacles[5],
+tr.obstacles[6],tr.obstacles[7],
+tr.obstacles[8],tr.obstacles[9],
+tr.obstacles[10],
+tr.obstacles[11],
+tr.oda,	tr.player
+];
+tr.update = function(){
+this.player = player;
+this.player.update(this);
+this.oda.update(this);
+this.oda.attack(this.player,this);
+this.player.attack([this.oda]);
+this.moveCameraX(this.player);
+this.findRoom();
+}
+//rendering 
+tr.bg1 = platImg1; tr.bg2 = platImg2; 
+tr.display = function(){
+ctx.fillStyle = "#77aacc";
+ctx.fillRect(0,0,c.width,c.height);
+ctx.drawImage(this.bg2,
+-this.cameraX*.01,500,c.width*2,c.height/2);
+ctx.drawImage(this.bg1,
+-this.cameraX*.05,500,c.width*2,c.height/2);
+this.displayEntitys();
+this.player.displayAttacks(this);
+}} else if (roomName == "you win!"){
+tr.display=function(){
+showTextBox("you win! thanks 4 playin this demo",
+{x:450,y:500,w:10,h:10},this);
+}
+}
+console.log(roomName);
+return tr;
+}
+map = [
+{x:-3000,y:0,w:1000,h:1000,name:"intro1"},
+{x:-2000,y:0,w:2000,h:1000,name:"intro0"},
+{x:0,y:0,w:1000,h:1000,name:"intro2"},
+{x:1000,y:0,w:4000,h:1000,name:"spike0"},
+{x:5000,y:0,w:2000,h:1000,name:"spike1"},
+{x:5000,y:-1000,w:2000,h:1000,name:"spike2"},
+{x:3000,y:-2000,w:2000,h:2000,name:"spike3"},
+{x:5000,y:-2000,w:1000,h:1000,name:"spike4"},
+{x:6000,y:-2000,w:1500,h:1000,name:"spike5"},
+{x:7500,y:-2000,w:1500,h:1000,name:"you win!"},
+]
+//room = getRoom("intro0");
+//room.x = -2000;
+room = getRoom("intro2");
+room.x = 0;
+hasHiraishin = true;
+draw = function(){
+ctx.webkitImageSmoothingEnabled = false;
+ctx.mozImageSmoothingEnabled = false;
+ctx.imageSmoothingEnabled = false;
+displayCtx.webkitImageSmoothingEnabled = false;
+displayCtx.mozImageSmoothingEnabled = false;
+displayCtx.imageSmoothingEnabled = false;
+GameLoop();
+spacewaspress = spacepress;
+mouse1waspress = mouse1press;
+mouse2waspress = mouse2press;
+setTimeout(function(){draw();}, 16);
+}
+draw();
+// or ||
+</script>
+</body>
+</html>
+
+
+
+
+
+

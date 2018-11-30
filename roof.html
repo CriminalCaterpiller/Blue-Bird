@@ -1,0 +1,58 @@
+<html>
+<body>
+<canvas id = "roofCanvas" width = 500 height = 500></canvas>
+<style>
+body { 
+background-color: #111111;
+}
+</style>
+<script>
+c = document.getElementById("roofCanvas");
+ctx = c.getContext("2d");
+c.width =  500; c.height = 500;
+
+ctx.fillStyle = "#807050";
+ctx.fillRect(0,0,c.width,c.height);
+
+imgData = ctx.getImageData(0,0,c.width,c.height);
+
+for (x = 0; x < c.width; x++){
+for (y = 0; y < c.height; y++){
+xfix = x-c.width/2; yfix = y-c.height/2;
+dist = Math.abs(500/yfix);
+ypos = Math.floor(dist*20/5)*5;
+red = xfix*dist-Math.floor(xfix*dist/100)*100;
+dist*=20;
+blu = (dist-Math.floor(dist/5)*5)*20;
+dist/=20;
+if (Math.floor(ypos/2)*2 == ypos){
+red = (xfix*dist-Math.floor(xfix*dist/100)*100)*2.5;
+xpos = (xfix*dist-Math.floor(xfix*dist/100)*100);
+if (xpos > 50) {
+red = 10; 
+}
+}
+if (blu > 80 || red > 90){
+imgData.data[(x+y*c.height)*4  ] = 50
+imgData.data[(x+y*c.height)*4+1] = 45;
+imgData.data[(x+y*c.height)*4+2] = 40;
+} 
+/*
+imgData.data[(x+y*c.height)*4  ] = red;
+imgData.data[(x+y*c.height)*4+1] = blu;
+//*/
+}
+}
+
+ctx.putImageData(imgData,0,0);
+
+// or ||
+</script>
+</body>
+</html>
+
+
+
+
+
+
